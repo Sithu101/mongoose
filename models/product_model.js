@@ -7,6 +7,7 @@ const ProductSchema = new Schema({
     size: { type: String, enum: ['S', 'M', 'L', 'XL'], default: 'M' },
     colors: [String],
     discount: { type: Schema.Types.Double, default: 0.0 },
+    tags: [String],
     images: [{
         link: { type: String, required: true },
         desc: { type: String, required: true }
@@ -22,6 +23,8 @@ const ProductSchema = new Schema({
 
     created: { type: Date, default: Date.now }
 });
+
+ProductSchema.index
 
 const Product = mongoose.model('products', ProductSchema);
 
