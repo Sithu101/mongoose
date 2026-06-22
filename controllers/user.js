@@ -8,17 +8,33 @@ const register = async (req, res, next) => {
     let password = req.body.password;
 
     try {
+        let namedUser = await userdbCollection.findOne({ name });
+        if (namedUser) {
+            return next(new Error("Name already exists"));
+        } else {
+            let phoneUser = await userdbCollection.findOne({ phone });
+            if (phoneUser) {
+                return next(new Error("Phone number already exists"));
+            } else {
+                await new userdbCollection({
+                    name,
+                    phone,
+                    password
+                }).save();
+                return Msg(res, "User registered successfully", req.body);
+            }
+        }
         await new userdbCollection({
             name,
             phone,
             password
         }).save();
 
-        Msg(res, "User registered successfully", req.body);
+        return Msg(res, "User registered successfully", req.body);
 
     } catch (error) {
         let errMsg = error.message.split(":")[0];
-        next(new Error(errMsg));
+        return next(new Error(errMsg));
     }
 }
 

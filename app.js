@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+
 mongoose.connect(process.env.DB_URL);
 
 app.use(express.json());
@@ -12,7 +13,7 @@ app.use('/users', userRouter);
 
 app.use((err, req, res, next) => {
     res.status(500).json({
-        condition: false,
+        condition: false, 
         message: "Something went wrong",
         error: err.message
     });
