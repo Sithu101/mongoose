@@ -1,43 +1,62 @@
 
-const { Msg } = require('../utils/core');
+const { Msg, Encoder, Token } = require('../utils/core');
 const userdbCollection = require('../models/user_model');
 
 const register = async (req, res, next) => {
-    let name = req.body.name;
+    let name = req.body.name.toLowerCase();
     let phone = req.body.phone;
     let password = req.body.password;
 
     try {
+
         let namedUser = await userdbCollection.findOne({ name });
         if (namedUser) {
-            return next(new Error("Name already exists"));
-        } else {
-            let phoneUser = await userdbCollection.findOne({ phone });
-            if (phoneUser) {
-                return next(new Error("Phone number already exists"));
-            } else {
-                await new userdbCollection({
-                    name,
-                    phone,
-                    password
-                }).save();
-                return Msg(res, "User registered successfully", req.body);
-            }
+            next(new Error("Name already exists"));
+            return;
+
         }
+
+        let phoneUser = await userdbCollection.findOne({ phone });
+        if (phoneUser) {
+            next(new Error("Phone number already exists"));
+            return;
+        }
+
+        let encodedPass = Encoder.encode(password)
         await new userdbCollection({
             name,
             phone,
-            password
+            password: encodedPass
         }).save();
-
-        return Msg(res, "User registered successfully", req.body);
+        Msg(res, "User registered successfully");
 
     } catch (error) {
-        let errMsg = error.message.split(":")[0];
-        return next(new Error(errMsg));
+        console.log(error)
     }
 }
+const login = async (req, res, next) => {
+    let name = req.body.name.toLowerCase();
+    let password = req.body.password;
 
+    let dbuser = await userdbCollection.findOne({ name });
+    if (!dbuser) {
+        next(new Error("User not found"));
+        return;
+    }
+    if (!Encoder.compare(password, dbuser.password)) {
+        next(new Error("Invalid password"));
+        return;
+    }
+
+    let token = Token.make({ id: dbuser._id.toString()});
+
+    Msg(res, "Login successful", { token })
+}
+const takeME = async (req, res, next) => {
+    Msg(res,"User info", { })
+}
 module.exports = {
-    register
+    register,
+    login,
+    takeME
 }
