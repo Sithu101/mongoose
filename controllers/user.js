@@ -53,7 +53,9 @@ const login = async (req, res, next) => {
     Msg(res, "Login successful", { token })
 }
 const takeME = async (req, res, next) => {
-    Msg(res,"User info", { })
+
+    let user = await userdbCollection.findById(req.userId).select("-password -__v")
+    Msg(res,"User info", {user})
 }
 module.exports = {
     register,
