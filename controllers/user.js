@@ -1,6 +1,7 @@
 
 const { Msg, Encoder, Token } = require('../utils/core');
 const userdbCollection = require('../models/user_model');
+const { setCacheUser } = require('../utils/caches')
 
 const register = async (req, res, next) => {
     let name = req.body.name.toLowerCase();
@@ -34,6 +35,7 @@ const register = async (req, res, next) => {
         console.log(error)
     }
 }
+
 const login = async (req, res, next) => {
     let name = req.body.name.toLowerCase();
     let password = req.body.password;
@@ -48,15 +50,19 @@ const login = async (req, res, next) => {
         return;
     }
 
-    let token = Token.make({ id: dbuser._id.toString()});
+    await setCacheUser(dbuser._id.toHexString(), dbuser);
+
+    let token = Token.make({ id: dbuser._id.toString() });
 
     Msg(res, "Login successful", { token })
 }
+
 const takeME = async (req, res, next) => {
 
-    let user = await userdbCollection.findById(req.userId).select("-password -__v")
-    Msg(res,"User info", {user})
+    // let user = await userdbCollection.findById(req.userId).select("-password -__v")
+    Msg(res, "User info", req.user)
 }
+
 module.exports = {
     register,
     login,

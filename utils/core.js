@@ -1,5 +1,12 @@
 const JWT = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const redis = require('async-redis').createClient();
+
+const RDB = {
+    set: async (key, value) => await redis.set(key, JSON.stringify(value)),
+    get: async (key) => JSON.parse(await redis.get(key)),
+    del: async (key) => await redis.del(key)
+}
 
 const Msg = (res, msg = "", result = {}) => {
     res.status(200).json({
@@ -20,5 +27,6 @@ const Token = {
 module.exports = {
     Msg,
     Encoder,
-    Token
+    Token,
+    RDB
 }
