@@ -37,6 +37,7 @@ const login = async (req, res, next) => {
   let password = req.body.password;
 
   let dbuser = await userdbCollection.findOne({ name });
+
   if (!dbuser) {
     next(new Error("User not found"));
     return;
@@ -57,7 +58,6 @@ const login = async (req, res, next) => {
 };
 
 const takeME = async (req, res, next) => {
-  // let user = await userdbCollection.findById(req.userId).select("-password -__v")
   Msg(res, "User info", req.user);
 };
 

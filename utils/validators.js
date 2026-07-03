@@ -8,8 +8,8 @@ const verifyToken = async (req, res, next) => {
 
     JWT.verify(token, process.env.MY_SECRET, async (err, decoded) => {
       if (err) {
-        if (err.message === "jwt expire") {
-          next(new Error("token expire"));
+        if (err.message === "jwt expired") {
+          next(new Error("token expired"));
         } else {
           next(new Error("tokenization Error"));
         }
