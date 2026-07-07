@@ -7,7 +7,7 @@ const fileUpload = require("express-fileupload");
 
 mongoose.connect(process.env.DB_URL);
 
-app.use(express.static( "public"));
+app.use(express.static("public"));
 app.use(express.json());
 app.use(fileUpload());
 
@@ -23,13 +23,19 @@ app.use((err, req, res, next) => {
   });
 });
 
-const { saveSingle } = require("./utils/gallery");
+const { saveSingle, saveMultiple } = require("./utils/gallery");
 
 app.post("/image", saveSingle, (req, res, next) => {
-    res.json({ con: true, link: req.imageLink });
+  res.json({ con: true, link: req.imageLink });
+});
+
+app.post("/images", saveMultiple, (req, res, next) => {
+  console.log(req.body.images);
+  res.json({ con: true, msg: req.body.images });
 });
 
 app.listen(process.env.PORT, () => {
   console.clear();
+  // console.log('process.memoryUsage():', process.memoryUsage());
   console.log(`Server is running on port ${process.env.PORT}`);
 });
