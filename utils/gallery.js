@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 
 const getFilename = (filename) => {
   let modiName = new Date().valueOf() + "_" + filename;
@@ -38,7 +39,25 @@ const saveMultiple = async (req, res, next) => {
   next();
 };
 
+const deleteImgByName = async (name) => {
+  // if (!name) {
+  //   return;
+  // }
+  let filePath = getSavepath(name);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+};
+
+const deleteImgByLink = async (link) => {
+  let pathAry = link.split("/");
+  let name = link.split("/")[pathAry.length - 1];
+  await deleteImgByName(name);
+};
+
 module.exports = {
   saveSingle,
   saveMultiple,
+  deleteImgByName,
+  deleteImgByLink,
 };

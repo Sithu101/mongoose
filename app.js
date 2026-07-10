@@ -23,7 +23,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const { saveSingle, saveMultiple } = require("./utils/gallery");
+const { saveSingle, saveMultiple, deleteImgByLink, deleteImgByName} = require("./utils/gallery");
 
 app.post("/image", saveSingle, (req, res, next) => {
   res.json({ con: true, link: req.imageLink });
@@ -38,4 +38,5 @@ app.listen(process.env.PORT, () => {
   console.clear();
   // console.log('process.memoryUsage():', process.memoryUsage());
   console.log(`Server is running on port ${process.env.PORT}`);
+  deleteImgByLink("http://localhost:3000/images/1783667554368_cat2.webp");
 });
