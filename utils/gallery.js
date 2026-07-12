@@ -18,7 +18,7 @@ const saveSingle = async (req, res, next) => {
   let filepath = getSavepath(filename);
   await req.files.file.mv(filepath);
   let imgLink = getimagelink(filename);
-  req.imageLink = imgLink;
+  req.body.image = imgLink;
   next();
 };
 
