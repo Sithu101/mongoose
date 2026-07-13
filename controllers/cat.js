@@ -4,13 +4,24 @@ const { Msg } = require("../utils/core");
 const all = async (req, res, next) => {
   try {
     let categories = await catDB.find();
-    Msg(res, true, "All categories", categories);
+    Msg(res, "All categories", categories);
   } catch (error) {
     console.log(error);
   }
 };
 
-const getById = async (req, res, next) => {};
+const getById = async (req, res, next) => {
+  try {
+    let cat = await catDB.findById(req.params.id);
+    if (cat) {
+      Msg(res, "Category found", cat);
+    } else {
+      next(new Error("Category not found"));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const add = async (req, res, next) => {
   try {
@@ -19,14 +30,27 @@ const add = async (req, res, next) => {
       next(new Error("Category already exists"));
     } else {
       let saveCat = new catDB(req.body).save();
-      Msg(res, true, "Category added successfully", saveCat);
+      Msg(res, "Category added successfully", saveCat);
     }
   } catch (error) {
     console.log(error);
   }
 };
 
-const modify = async (req, res, next) => {};
+const modify = async (req, res, next) => {
+  try {
+    let dbCat = await catDB.findById(req.params.id);
+    if (!dbCat) {
+      next(new Error("Category not found"));
+    } else {
+      let updateCat = await catDB.findByIdAndUpdate(dbCat._id, req.body, { new: true });
+      Msg(res, "Category updated successfully", updateCat);
+    }
+  } catch (error) {
+    console.log(error);
+    next(new Error("Failed to update category"));
+  }
+};
 
 const remove = async (req, res, next) => {};
 
