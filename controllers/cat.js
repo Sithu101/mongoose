@@ -1,5 +1,6 @@
 const catDB = require("../models/category");
 const { Msg } = require("../utils/core");
+const { deleteImage } = require("../utils/gallery");
 
 const all = async (req, res, next) => {
   try {
@@ -24,16 +25,12 @@ const getById = async (req, res, next) => {
 };
 
 const add = async (req, res, next) => {
-  try {
-    let dbCat = await catDB.findOne({ name: req.body.name });
-    if (dbCat) {
-      next(new Error("Category already exists"));
-    } else {
-      let saveCat = new catDB(req.body).save();
-      Msg(res, "Category added successfully", saveCat);
-    }
-  } catch (error) {
-    console.log(error);
+  let dbCat = await catDB.findOne({ name: req.body.name });
+  if (dbCat) {
+    next(new Error("Category already exists"));
+  } else {
+    let saveCat = await new catDB(req.body).save();
+    Msg(res, "Category added successfully", saveCat);
   }
 };
 
@@ -43,7 +40,9 @@ const modify = async (req, res, next) => {
     if (!dbCat) {
       next(new Error("Category not found"));
     } else {
-      let updateCat = await catDB.findByIdAndUpdate(dbCat._id, req.body, { new: true });
+      let updateCat = await catDB.findByIdAndUpdate(dbCat._id, req.body, {
+        new: true,
+      });
       Msg(res, "Category updated successfully", updateCat);
     }
   } catch (error) {

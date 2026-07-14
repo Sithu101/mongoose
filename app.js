@@ -13,9 +13,11 @@ app.use(fileUpload());
 
 const userRouter = require("./routers/user");
 const catRouter = require("./routers/cat");
+const productRoute = require("./routers/product");
 
 app.use("/users", userRouter);
 app.use("/cats", catRouter);
+app.use("/products", productRouter);
 
 app.use((err, req, res, next) => {
   res.status(500).json({
@@ -25,7 +27,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-const { saveSingle, saveMultiple} = require("./utils/gallery");
+const { saveSingle, saveMultiple } = require("./utils/gallery");
 
 app.post("/image", saveSingle, (req, res, next) => {
   res.json({ con: true, link: req.imageLink });
@@ -39,4 +41,5 @@ app.listen(process.env.PORT, () => {
   console.clear();
   // console.log('process.memoryUsage():', process.memoryUsage());
   console.log(`Server is running on port ${process.env.PORT}`);
+
 });

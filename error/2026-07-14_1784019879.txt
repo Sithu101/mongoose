@@ -1,0 +1,1 @@
+{"errorLabelSet":{},"errorResponse":{"index":0,"code":11000,"errmsg":"E11000 duplicate key error collection: shop.categories index: name_1 dup key: { name: \"1021\" }","keyPattern":{"name":1},"keyValue":{"name":"1021"}},"index":0,"code":11000,"keyPattern":{"name":1},"keyValue":{"name":"1021"}}
