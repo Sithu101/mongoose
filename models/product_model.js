@@ -10,6 +10,7 @@ const ProductSchema = new Schema({
   discount: { type: Schema.Types.Double, default: 0.0 },
   category: { type: Schema.Types.ObjectId, ref: "categories", required: true },
   tags: [String],
+
   images: [
     {
       link: { type: String, required: true },

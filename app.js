@@ -17,7 +17,7 @@ const productRoute = require("./routers/product");
 
 app.use("/users", userRouter);
 app.use("/cats", catRouter);
-app.use("/products", productRouter);
+app.use("/products", productRoute);
 
 app.use((err, req, res, next) => {
   res.status(500).json({

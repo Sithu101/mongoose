@@ -1,1 +1,0 @@
-{"errors":{"name":{"name":"ValidatorError","message":"Path `name` is required.","properties":{"message":"Path `name` is required.","type":"required","path":"name"},"kind":"required","path":"name"}},"_message":"categories validation failed","name":"ValidationError","message":"categories validation failed: name: Path `name` is required."}

@@ -32,9 +32,8 @@ const saveMultiple = async (req, res, next) => {
     filename = getFilename(filename);
     let filepath = getSavepath(filename);
     file.mv(filepath);
-    imageLinks.push(getimagelink(filename));
+    imageLinks.push({ link: getimagelink(filename), desc:"Images" + i });
   }
-  req.body = req.body || {};
   req.body.images = imageLinks;
   next();
 };
