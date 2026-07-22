@@ -23,23 +23,42 @@ const saveSingle = async (req, res, next) => {
 };
 
 const saveMultiple = async (req, res, next) => {
-  let files = req.files.files;
-  if (!Array.isArray(files)) {
-    files = [files];
-  }
+  try {
+    console.log('saveMultiple called, req.body keys:', Object.keys(req.body || {}));
+    console.log('saveMultiple files keys:', req.files ? Object.keys(req.files) : null);
 
-  let imageLinks = [];
+    let files = req.files && req.files.files;
+    if (!files) {
+      console.log('No files provided to saveMultiple');
+      req.body.images = [];
+      return next();
+    }
 
-  for (let i = 0; i < files.length; i++) {
-    let file = files[i];
-    let filename = file.name;
-    filename = getFilename(filename);
-    let filepath = getSavepath(filename);
-    await file.mv(filepath);
-    imageLinks.push({ link: getimagelink(filename), desc: "Images" + i });
+    if (!Array.isArray(files)) {
+      files = [files];
+    }
+
+    let imageLinks = [];
+
+    for (let i = 0; i < files.length; i++) {
+      let file = files[i];
+      let filename = file.name;
+      filename = getFilename(filename);
+      let filepath = getSavepath(filename);
+      try {
+        await file.mv(filepath);
+      } catch (mvErr) {
+        console.error('Error moving file', mvErr);
+        return next(mvErr);
+      }
+      imageLinks.push({ link: getimagelink(filename), desc: "Images" + i });
+    }
+    req.body.images = imageLinks;
+    next();
+  } catch (err) {
+    console.error('saveMultiple error:', err);
+    next(err);
   }
-  req.body.images = imageLinks;
-  next();
 };
 
 const deleteImgByName = async (name) => {
