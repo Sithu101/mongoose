@@ -341,7 +341,11 @@ const submitRegister = async (event) => {
 
   try {
     await apiFetch("/users/register", { method: "POST", body });
+    // After successful registration, switch to the login form and pre-fill username
     form.reset();
+    const loginNameInput = document.querySelector("#loginForm input[name='name']");
+    if (loginNameInput) loginNameInput.value = body.name;
+    showAuthForm("login");
     showMessage("Account created. Please login.");
   } catch (error) {
     showMessage(error.message, "error");
