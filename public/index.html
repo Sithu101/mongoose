@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mongoose Shop Frontend</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="page-header">
+        <div>
+          <h1>Mongoose Shop</h1>
+          <p class="subtitle">Register, login, manage categories, and create products.</p>
+        </div>
+        <div class="header-actions">
+          <button id="showLoginBtn">Login</button>
+          <button id="showRegisterBtn">Register</button>
+          <button id="logoutBtn" class="hidden">Logout</button>
+        </div>
+      </header>
+
+      <main>
+        <section id="messageBox" class="message hidden"></section>
+
+        <section id="authSection" class="grid-panel">
+          <article id="loginCard" class="card auth-card">
+            <h2>Login</h2>
+            <form id="loginForm">
+              <label>
+                Username
+                <input type="text" name="name" required />
+              </label>
+              <label>
+                Password
+                <input type="password" name="password" required />
+              </label>
+              <button type="submit">Login</button>
+            </form>
+          </article>
+
+          <article id="registerCard" class="card auth-card hidden">
+            <h2>Register</h2>
+            <form id="registerForm">
+              <label>
+                Username
+                <input type="text" name="name" required />
+              </label>
+              <label>
+                Phone
+                <input type="tel" name="phone" required />
+              </label>
+              <label>
+                Password
+                <input type="password" name="password" required />
+              </label>
+              <button type="submit">Register</button>
+            </form>
+          </article>
+        </section>
+
+        <section id="dashboardSection" class="hidden">
+          <div class="dashboard-grid">
+            <article class="card profile-card">
+              <h2>Profile</h2>
+              <dl>
+                <div>
+                  <dt>Name</dt>
+                  <dd id="profileName">—</dd>
+                </div>
+                <div>
+                  <dt>Phone</dt>
+                  <dd id="profilePhone">—</dd>
+                </div>
+                <div>
+                  <dt>Account Type</dt>
+                  <dd id="profileType">—</dd>
+                </div>
+                <div>
+                  <dt>Created</dt>
+                  <dd id="profileCreated">—</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="card manage-card">
+              <h2>Category Management</h2>
+              <form id="categoryForm" class="stacked-form">
+                <label>
+                  Category name
+                  <input type="text" name="name" required />
+                </label>
+                <label>
+                  Category image
+                  <input type="file" name="file" accept="image/*" required />
+                </label>
+                <button type="submit">Add Category</button>
+              </form>
+              <div class="table-wrapper">
+                <table id="categoriesTable">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Image</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </article>
+
+            <article class="card manage-card">
+              <h2>Create Product</h2>
+              <form id="productForm" class="stacked-form">
+                <label>
+                  Product name
+                  <input type="text" name="name" required />
+                </label>
+                <label>
+                  Price
+                  <input type="number" name="price" min="0" step="0.01" required />
+                </label>
+                <label>
+                  Discount
+                  <input type="number" name="discount" min="0" step="0.01" value="0" />
+                </label>
+                <label>
+                  Size
+                  <select name="size">
+                    <option value="S">S</option>
+                    <option value="M" selected>M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                  </select>
+                </label>
+                <label>
+                  Category
+                  <select name="category" id="productCategory" required></select>
+                </label>
+                <label>
+                  Colors (comma-separated)
+                  <input type="text" name="colors" placeholder="red, green, blue" />
+                </label>
+                <label>
+                  Tags (comma-separated)
+                  <input type="text" name="tags" placeholder="new, popular" />
+                </label>
+                <div class="shipping-panel">
+                  <h3>Shipping Options</h3>
+                  <div class="shipping-inputs">
+                    <input type="text" id="shippingName" placeholder="Name" />
+                    <input type="text" id="shippingDesc" placeholder="Description" />
+                    <input type="number" id="shippingCost" placeholder="Cost" min="0" step="0.01" />
+                    <button type="button" id="addShippingBtn">Add</button>
+                  </div>
+                  <ul id="shippingList" class="shipping-list"></ul>
+                </div>
+                <label>
+                  Product images
+                  <input type="file" name="files" id="productImages" multiple accept="image/*" required />
+                </label>
+                <button type="submit">Create Product</button>
+              </form>
+            </article>
+
+            <article class="card manage-card">
+              <h2>Product Catalog</h2>
+              <div class="pagination-controls">
+                <button id="prevPageBtn">Previous</button>
+                <span>Page <span id="currentPage">1</span></span>
+                <button id="nextPageBtn">Next</button>
+              </div>
+              <div id="productList" class="product-list"></div>
+            </article>
+
+            <article class="card manage-card">
+              <h2>Image Upload Tools</h2>
+              <form id="singleImageForm" class="stacked-form">
+                <label>
+                  Single image
+                  <input type="file" name="file" accept="image/*" required />
+                </label>
+                <button type="submit">Upload single image</button>
+              </form>
+              <form id="multipleImageForm" class="stacked-form">
+                <label>
+                  Multiple images
+                  <input type="file" name="files" id="multiUploadFiles" accept="image/*" multiple required />
+                </label>
+                <button type="submit">Upload multiple images</button>
+              </form>
+              <div id="imageUploadResult" class="upload-result"></div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="app.js" defer></script>
+  </body>
+</html>

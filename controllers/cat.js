@@ -51,7 +51,22 @@ const modify = async (req, res, next) => {
   }
 };
 
-const remove = async (req, res, next) => {};
+const remove = async (req, res, next) => {
+  try {
+    let dbCat = await catDB.findById(req.params.id);
+    if (!dbCat) {
+      next(new Error("Category not found"));
+      return;
+    }
+
+    await deleteImage(dbCat.image);
+    await catDB.findByIdAndDelete(dbCat._id);
+    Msg(res, "Category removed successfully", dbCat);
+  } catch (error) {
+    console.log(error);
+    next(new Error("Failed to delete category"));
+  }
+};
 
 module.exports = {
   all,

@@ -36,25 +36,32 @@ const login = async (req, res, next) => {
   let name = req.body.name.toLowerCase();
   let password = req.body.password;
 
-  let dbuser = await userdbCollection.findOne({ name });
+  try {
+    let dbuser = await userdbCollection.findOne({ name });
 
-  if (!dbuser) {
-    next(new Error("User not found"));
-    return;
+    if (!dbuser) {
+      next(new Error("User not found"));
+      return;
+    }
+
+    let passwordMatches = await Encoder.compare(password, dbuser.password);
+    if (!passwordMatches) {
+      next(new Error("Invalid password"));
+      return;
+    }
+
+    let successUser = dbuser.toObject();
+    delete successUser.password;
+
+    await setCacheUser(dbuser._id.toHexString(), successUser);
+
+    let token = Token.make({ id: dbuser._id.toString() });
+
+    Msg(res, "Login successful", { token });
+  } catch (error) {
+    console.log(error);
+    next(new Error("Failed to login"));
   }
-  if (!Encoder.compare(password, dbuser.password)) {
-    next(new Error("Invalid password"));
-    return;
-  }
-
-  let successUser = dbuser.toObject();
-  delete successUser.password;
-
-  await setCacheUser(dbuser._id.toHexString(), successUser);
-
-  let token = Token.make({ id: dbuser._id.toString() });
-
-  Msg(res, "Login successful", { token });
 };
 
 const takeME = async (req, res, next) => {

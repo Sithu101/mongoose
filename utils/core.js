@@ -44,7 +44,7 @@ const Encoder = {
 
 const Token = {
   make: (payload) =>
-    JWT.sign(payload, process.env.MY_SECRET, { expiresIn: 60 * 60 }), // 1 day
+    JWT.sign(payload, process.env.MY_SECRET, { expiresIn: 60 * 60 }), // 1 hour
 };
 module.exports = {
   Msg,

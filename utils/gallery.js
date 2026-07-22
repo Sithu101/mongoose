@@ -24,6 +24,10 @@ const saveSingle = async (req, res, next) => {
 
 const saveMultiple = async (req, res, next) => {
   let files = req.files.files;
+  if (!Array.isArray(files)) {
+    files = [files];
+  }
+
   let imageLinks = [];
 
   for (let i = 0; i < files.length; i++) {
@@ -31,8 +35,8 @@ const saveMultiple = async (req, res, next) => {
     let filename = file.name;
     filename = getFilename(filename);
     let filepath = getSavepath(filename);
-    file.mv(filepath);
-    imageLinks.push({ link: getimagelink(filename), desc:"Images" + i });
+    await file.mv(filepath);
+    imageLinks.push({ link: getimagelink(filename), desc: "Images" + i });
   }
   req.body.images = imageLinks;
   next();
