@@ -30,7 +30,6 @@ const saveMultiple = async (req, res, next) => {
     let files = req.files && req.files.files;
     if (!files) {
       console.log('No files provided to saveMultiple');
-      req.body.images = [];
       return next();
     }
 

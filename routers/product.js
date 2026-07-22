@@ -7,6 +7,8 @@ const Product = require("../models/product_model");
 const Category = require("../models/category");
 
 router.post("/", verifyToken , saveMultiple, Controller.add);
+// JSON endpoint without file upload middleware
+router.post('/json', verifyToken, Controller.add);
 router.post('/test-save', verifyToken, async (req, res) => {
   try {
     const cat = await Category.findOne();
