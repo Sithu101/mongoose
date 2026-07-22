@@ -68,8 +68,9 @@ const add = async (req, res, next) => {
     console.log('Saved product:', product._id);
     Msg(res, "Product added successfully", product);
   } catch (error) {
-    console.log(error);
-    next(new Error('Failed to create product'));
+    console.error('Product create error:', error && error.stack ? error.stack : error);
+    // For debugging return the error details directly (remove or limit in production)
+    return res.status(500).json({ condition: false, message: 'Something went wrong', error: error.message, stack: error.stack });
   }
 };
 
