@@ -71,17 +71,41 @@ const add = async (req, res, next) => {
       },
     });
 
-    req.body.colors = safeParse(req.body.colors) || [];
-    req.body.tags = safeParse(req.body.tags) || [];
-    req.body.Shipping = safeParse(req.body.Shipping) || [];
+    const colors = safeParse(req.body.colors) || [];
+    const tags = safeParse(req.body.tags) || [];
+    const shippingRaw = safeParse(req.body.Shipping) || [];
 
-    console.log('Parsed fields:', {
-      colors: req.body.colors,
-      tags: req.body.tags,
-      Shipping: req.body.Shipping,
-    });
+    // Normalize shipping entries to objects with proper types
+    const Shipping = Array.isArray(shippingRaw)
+      ? shippingRaw.map((s) => {
+          if (!s || typeof s !== 'object') return null;
+          return {
+            name: s.name || String(s.name || ''),
+            desc: s.desc || String(s.desc || ''),
+            cost: Number(s.cost) || 0,
+          };
+        }).filter(Boolean)
+      : [];
 
-    let product = await new productDB(req.body).save();
+    // Ensure images are present (set by saveMultiple middleware)
+    const images = Array.isArray(req.body.images) ? req.body.images : (req.body.images ? [req.body.images] : []);
+
+    const productData = {
+      name: req.body.name,
+      price: Number(req.body.price) || 0,
+      size: req.body.size || 'M',
+      user: req.body.user,
+      colors: Array.isArray(colors) ? colors.map(String) : [],
+      discount: Number(req.body.discount) || 0,
+      category: req.body.category,
+      tags: Array.isArray(tags) ? tags.map(String) : [],
+      images,
+      Shipping,
+    };
+
+    console.log('Saving product data:', productData);
+
+    let product = await new productDB(productData).save();
 
     console.log('Saved product:', product._id);
     Msg(res, "Product added successfully", product);
