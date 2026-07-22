@@ -110,9 +110,16 @@ const add = async (req, res, next) => {
     console.log('Saved product:', product._id);
     Msg(res, "Product added successfully", product);
   } catch (error) {
-    console.error('Product create error:', error && error.stack ? error.stack : error);
+    const errText = (error && error.stack) ? error.stack : String(error);
+    try {
+      const fs = require('fs');
+      fs.appendFileSync('product-error.log', new Date().toISOString() + "\n" + errText + "\n\n", 'utf-8');
+    } catch (e) {
+      console.error('Failed to write error log:', e);
+    }
+    console.error('Product create error:', errText);
     // For debugging return the error details directly (remove or limit in production)
-    return res.status(500).json({ condition: false, message: 'Something went wrong', error: error.message, stack: error.stack });
+    return res.status(500).json({ condition: false, message: 'Something went wrong', error: error.message });
   }
 };
 
