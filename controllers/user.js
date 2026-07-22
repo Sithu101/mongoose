@@ -1,6 +1,7 @@
 const { Msg, Encoder, Token } = require("../utils/core");
 const userdbCollection = require("../models/user_model");
 const { setCacheUser } = require("../utils/caches");
+const LoginLog = require("../models/login_log");
 
 const register = async (req, res, next) => {
   let name = req.body.name.toLowerCase();
@@ -56,6 +57,19 @@ const login = async (req, res, next) => {
     await setCacheUser(dbuser._id.toHexString(), successUser);
 
     let token = Token.make({ id: dbuser._id.toString() });
+
+    // save login log
+    try {
+      await new LoginLog({
+        user: dbuser._id,
+        attemptedName: name,
+        ip: req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress,
+        agent: req.headers['user-agent'] || '',
+        success: true,
+      }).save();
+    } catch (logErr) {
+      console.error('Failed to write login log:', logErr);
+    }
 
     Msg(res, "Login successful", { token });
   } catch (error) {
