@@ -24,17 +24,33 @@ const getById = async (req, res, next) => {
 const safeParse = (value) => {
   if (Array.isArray(value)) return value;
   if (!value || typeof value !== 'string') return value;
-  // Try direct parse
+
+  let v = value.trim();
+
+  // Strip surrounding quotes that some clients add
+  if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+    v = v.slice(1, -1);
+  }
+
+  // Try JSON.parse directly
   try {
-    return JSON.parse(value);
+    return JSON.parse(v);
   } catch (e) {
-    // Remove backslashes that may have been added by shell quoting (e.g. "[\"a\"]")
+    // Replace escaped quotes and escaped backslashes, then try parse
     try {
-      const cleaned = value.replace(/\\+/g, '');
-      return JSON.parse(cleaned);
+      const step1 = v.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+      return JSON.parse(step1);
     } catch (e2) {
-      // As a last resort, split by comma for simple lists (e.g. "a,b")
-      return value.split(',').map(v => v.trim()).filter(Boolean);
+      // Remove any remaining backslashes and try
+      try {
+        const cleaned = v.replace(/\\+/g, '');
+        return JSON.parse(cleaned);
+      } catch (e3) {
+        // Fallback: if it looks like comma-separated values, return array
+        if (v.indexOf(',') !== -1) return v.split(',').map(s => s.trim()).filter(Boolean);
+        // Otherwise return original string
+        return value;
+      }
     }
   }
 };

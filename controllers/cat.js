@@ -1,6 +1,6 @@
 const catDB = require("../models/category");
 const { Msg } = require("../utils/core");
-const { deleteImage } = require("../utils/gallery");
+const { deleteImgByLink } = require("../utils/gallery");
 
 const all = async (req, res, next) => {
   try {
@@ -59,7 +59,7 @@ const remove = async (req, res, next) => {
       return;
     }
 
-    await deleteImage(dbCat.image);
+    await deleteImgByLink(dbCat.image);
     await catDB.findByIdAndDelete(dbCat._id);
     Msg(res, "Category removed successfully", dbCat);
   } catch (error) {
