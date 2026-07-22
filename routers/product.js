@@ -33,8 +33,8 @@ router.post('/test-save', verifyToken, async (req, res) => {
   }
 });
 
+// Ensure paginate route is declared before the param route so '/paginate/:index' is not treated as an id
+router.get('/paginate/:index', verifyToken, Controller.paginate);
 router.get("/:id", verifyToken, Controller.getById);
-router.get('/paginate/:index', verifyToken, Controller.paginate)
-
 
 module.exports = router;
