@@ -59,9 +59,27 @@ const add = async (req, res, next) => {
   try {
     req.body.user = req.userId;
 
+    // Debug incoming raw values
+    console.log('Incoming raw fields:', {
+      colors: req.body.colors,
+      tags: req.body.tags,
+      Shipping: req.body.Shipping,
+      types: {
+        colorsType: typeof req.body.colors,
+        tagsType: typeof req.body.tags,
+        ShippingType: typeof req.body.Shipping,
+      },
+    });
+
     req.body.colors = safeParse(req.body.colors) || [];
     req.body.tags = safeParse(req.body.tags) || [];
     req.body.Shipping = safeParse(req.body.Shipping) || [];
+
+    console.log('Parsed fields:', {
+      colors: req.body.colors,
+      tags: req.body.tags,
+      Shipping: req.body.Shipping,
+    });
 
     let product = await new productDB(req.body).save();
 
