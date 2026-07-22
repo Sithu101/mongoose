@@ -20,17 +20,41 @@ const getById = async (req, res, next) => {
   }
   next(new Error("no product with id"));
 };
+
+const safeParse = (value) => {
+  if (Array.isArray(value)) return value;
+  if (!value || typeof value !== 'string') return value;
+  // Try direct parse
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    // Remove backslashes that may have been added by shell quoting (e.g. "[\"a\"]")
+    try {
+      const cleaned = value.replace(/\\+/g, '');
+      return JSON.parse(cleaned);
+    } catch (e2) {
+      // As a last resort, split by comma for simple lists (e.g. "a,b")
+      return value.split(',').map(v => v.trim()).filter(Boolean);
+    }
+  }
+};
+
 const add = async (req, res, next) => {
-  req.body.user = req.userId;
+  try {
+    req.body.user = req.userId;
 
-  req.body.colors = JSON.parse(req.body.colors);
-  req.body.tags = JSON.parse(req.body.tags);
-  req.body.Shipping = JSON.parse(req.body.Shipping);
+    req.body.colors = safeParse(req.body.colors) || [];
+    req.body.tags = safeParse(req.body.tags) || [];
+    req.body.Shipping = safeParse(req.body.Shipping) || [];
 
-  let product = await new productDB(req.body).save();
+    let product = await new productDB(req.body).save();
 
-  console.log(req.body);
-  Msg(res, "Product added successfully", product);
+    console.log('Saved product:', product._id);
+    Msg(res, "Product added successfully", product);
+  } catch (error) {
+    console.log(error);
+    next(new Error('Failed to create product'));
+  }
 };
 
 module.exports = {
